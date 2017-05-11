@@ -1,5 +1,16 @@
 apply plugin: 'com.android.application'
 
+description "A template project to build Android applications using SDL2"
+version "0.1"
+
+// given current dir, build type and abi, returns the absolute path of the sdl2 lib
+def sdlLibPath = { moduleDir, buildType, targetAbi ->
+    return "${moduleDir}/build/intermediates/cmake/${buildType}/obj/${targetAbi}/libSDL2-2.0.so"
+}
+
+def moduleDir = buildscript.sourceFile.getParent()
+def abiName = "armeabi-v7a"
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
@@ -10,21 +21,44 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        externalNativeBuild {
-            cmake {
-                cppFlags "-std=c++11"
-            }
+        ndk {
+          // Specifies the ABI configurations of your native
+          // libraries Gradle should build and package with your APK.
+          abiFilters abiName
         }
     }
+
+    // these cmake args are in common for all build variants
+    def cmakeArguments = ["-DANDROID_NDKDIR=${android.ndkDirectory}",
+                         "-DSDL2_INCLUDE_DIR=${moduleDir}/src/main/cpp/SDL/include"]
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            def buildType = name
+            externalNativeBuild {
+                cmake {
+                    arguments "-DANDROID_NDKDIR=${android.ndkDirectory}",
+                              "-DSDL2_INCLUDE_DIR=${moduleDir}/src/main/cpp/SDL/include",
+                              "-DSDL2_SHARED_LIB_PATH=${sdlLibPath(moduleDir, buildType, abiName)}" // TODO: abi hardcoded
+                }
+            }
+        }
+        debug {
+            def buildType = name
+            externalNativeBuild {
+                cmake {
+                    arguments "-DANDROID_NDKDIR=${android.ndkDirectory}",
+                              "-DSDL2_INCLUDE_DIR=${moduleDir}/src/main/cpp/SDL/include",
+                              "-DSDL2_SHARED_LIB_PATH=${sdlLibPath(moduleDir, buildType, abiName)}" // TODO: abi hardcoded
+                }
+            }
         }
     }
     externalNativeBuild {
         cmake {
-            path "CMakeLists.txt"
+            path "src/main/cpp/CMakeLists.txt"
         }
     }
 }

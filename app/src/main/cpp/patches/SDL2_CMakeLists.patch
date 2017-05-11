@@ -1,0 +1,18 @@
+755c755,757
+<   file(GLOB ANDROID_MAIN_SOURCES ${SDL2_SOURCE_DIR}/src/main/android/*.c)
+---
+>   if(NOT SDL_SHARED)
+>     file(GLOB ANDROID_MAIN_SOURCES ${SDL2_SOURCE_DIR}/src/main/android/*.c)
+>   endif()
+795a798,808
+> 
+>   if(ANDROID_ABI MATCHES "^armeabi")
+>     # set arm mode for specific files
+>     set(SDL2_ARM_MODE_SOURCE_FILES
+>       ${SDL2_SOURCE_DIR}/src/atomic/SDL_atomic.c
+>       ${SDL2_SOURCE_DIR}/src/atomic/SDL_spinlock.c
+>     )
+>     set_source_files_properties(${SDL2_ARM_MODE_SOURCE_FILES} PROPERTIES COMPILE_FLAGS -marm)
+>   endif()
+> 
+> 
