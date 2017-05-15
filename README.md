@@ -43,4 +43,6 @@ Known issues
 Android Sdk's Cmake may have OpenSSL version issues with some linux distributions;
 in particular, it wasn't able to use `libssl.so.1.0.0` and `libcrypto.so.1.0.0` shipped with the system.
 
-To solve the problem, I had to download and build an older revision of _OpenSSL 1.0.0_, and replace the symbolic links in `/usr/lib/` of course.
+To solve the problem, I had to download and build an older revision of _OpenSSL 1.0.0_, and replace the symbolic links in `/usr/lib/` of course.<br/>
+
+**Note for Debian users**: you can download the right package from the official repository (see package [libssl1.0.0](https://packages.debian.org/jessie/libssl1.0.0)) and install it manually by using `dpkg`. It doesn't matter which release you have on board: the package is from the _stable_ release, but you can safely install it both in _testing_ and on _sid_.
